@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "startStepId": "stepA",
+  "steps": {
+    "stepA": {
+      "type": "activity",
+      "name": "ValidateInput",
+      "input": { "type": "input" },
+      "nextStepId": "stepB"
+    },
+    "stepB": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "workflowData": { "type": "input" },
+        "fromStepA": { "type": "stepResult", "stepId": "stepA" }
+      },
+      "nextStepId": "stepC"
+    },
+    "stepC": {
+      "type": "activity",
+      "name": "LogError",
+      "input": {
+        "reason": { "type": "literal", "value": "done" },
+        "previousOutput": { "type": "stepResult", "stepId": "stepB", "path": "$.processed" }
+      },
+      "nextStepId": null
+    }
+  }
+}

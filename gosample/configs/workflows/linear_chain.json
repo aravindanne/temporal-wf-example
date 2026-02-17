@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "startStepId": "step1",
+  "steps": {
+    "step1": {
+      "type": "activity",
+      "name": "ValidateInput",
+      "input": { "type": "input" },
+      "nextStepId": "step2"
+    },
+    "step2": {
+      "type": "activity",
+      "name": "Process",
+      "input": { "type": "stepResult", "stepId": "step1" },
+      "nextStepId": null
+    }
+  }
+}

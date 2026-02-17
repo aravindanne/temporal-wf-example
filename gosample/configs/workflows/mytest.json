@@ -1,0 +1,37 @@
+{
+      "version": "1.0",
+      "startStepId": "activity_1",
+      "steps": {
+        "activity_1": {
+          "type": "activity",
+          "name": "ValidateInput",
+          "nextStepId": "parallel_activity_1"
+        },
+        "activity_2": {
+          "type": "activity",
+          "name": "Process"
+        },
+        "activity_3": {
+          "type": "activity",
+          "name": "LogError",
+          "nextStepId": "activity_4"
+        },
+        "activity_4": {
+          "type": "activity",
+          "name": "Greet",
+          "nextStepId": "activity_5"
+        },
+        "activity_5": {
+          "type": "activity",
+          "name": "SendEmail"
+        },
+        "parallel_activity_1": {
+          "type": "parallel",
+          "branchStepIds": [
+            "activity_2",
+            "activity_3"
+          ],
+          "join": "all"
+        }
+      }
+    }

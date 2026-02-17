@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "startStepId": "greet",
+  "steps": {
+    "greet": {
+      "type": "activity",
+      "name": "Greet",
+      "input": { "name": "World" },
+      "nextStepId": null
+    }
+  }
+}

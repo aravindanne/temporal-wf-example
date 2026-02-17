@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "startStepId": "sendEmail",
+  "steps": {
+    "sendEmail": {
+      "type": "activity",
+      "name": "SendEmail",
+      "input": { "type": "input" },
+      "nextStepId": "waitEmailOutcome"
+    },
+    "waitEmailOutcome": {
+      "type": "signal",
+      "signalName": "email_outcome",
+      "signalTimeoutSeconds": 60,
+      "nextStepId": "handleOutcome",
+      "timeoutStepId": "handleTimeout"
+    },
+    "handleOutcome": {
+      "type": "activity",
+      "name": "Process",
+      "input": { "type": "stepResult", "stepId": "waitEmailOutcome" },
+      "nextStepId": null
+    },
+    "handleTimeout": {
+      "type": "activity",
+      "name": "LogError",
+      "input": { "type": "stepResult", "stepId": "waitEmailOutcome" },
+      "nextStepId": null
+    }
+  }
+}

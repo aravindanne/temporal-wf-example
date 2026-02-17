@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "startStepId": "prepare",
+  "steps": {
+    "prepare": {
+      "type": "activity",
+      "name": "ValidateInput",
+      "input": { "type": "input" },
+      "nextStepId": "parallelTasks"
+    },
+    "parallelTasks": {
+      "type": "parallel",
+      "branchStepIds": ["fetchUser", "fetchProduct", "fetchOrder"],
+      "join": "all",
+      "nextStepId": "aggregate"
+    },
+    "fetchUser": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "fetchUser" },
+        "userId": { "type": "input", "path": "$.userId" }
+      }
+    },
+    "fetchProduct": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "fetchProduct" },
+        "productId": { "type": "input", "path": "$.productId" }
+      }
+    },
+    "fetchOrder": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "fetchOrder" },
+        "orderId": { "type": "input", "path": "$.orderId" }
+      }
+    },
+    "aggregate": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "aggregate" },
+        "user": { "type": "stepResult", "stepId": "parallelTasks", "path": "$.fetchUser" },
+        "product": { "type": "stepResult", "stepId": "parallelTasks", "path": "$.fetchProduct" },
+        "order": { "type": "stepResult", "stepId": "parallelTasks", "path": "$.fetchOrder" }
+      }
+    }
+  }
+}

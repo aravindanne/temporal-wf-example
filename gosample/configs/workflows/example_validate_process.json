@@ -1,0 +1,32 @@
+{
+  "version": "1.0",
+  "startStepId": "validate",
+  "steps": {
+    "validate": {
+      "type": "activity",
+      "name": "ValidateInput",
+      "input": { "type": "input" },
+      "nextStepId": "check"
+    },
+    "check": {
+      "type": "condition",
+      "left": { "type": "stepResult", "stepId": "validate", "path": "$.valid" },
+      "operator": "eq",
+      "right": { "type": "literal", "value": true },
+      "thenStepId": "process",
+      "elseStepId": "logError"
+    },
+    "process": {
+      "type": "activity",
+      "name": "Process",
+      "input": { "type": "stepResult", "stepId": "validate" },
+      "nextStepId": null
+    },
+    "logError": {
+      "type": "activity",
+      "name": "LogError",
+      "input": { "type": "stepResult", "stepId": "validate", "path": "$.error" },
+      "nextStepId": null
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "startStepId": "start",
+  "steps": {
+    "start": {
+      "type": "activity",
+      "name": "ValidateInput",
+      "input": { "type": "input" },
+      "nextStepId": "parallelWithRetries"
+    },
+    "parallelWithRetries": {
+      "type": "parallel",
+      "branchStepIds": ["task1", "task2", "task3"],
+      "join": "all",
+      "onFailureStepId": "handleParallelFailure",
+      "nextStepId": "success"
+    },
+    "task1": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "task": { "type": "literal", "value": "task1" },
+        "data": { "type": "input", "path": "$.data1" }
+      },
+      "timeoutSeconds": 30,
+      "retryPolicy": {
+        "maximumAttempts": 3,
+        "backoffCoefficient": 2.0,
+        "initialIntervalSeconds": 1,
+        "maximumIntervalSeconds": 10
+      }
+    },
+    "task2": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "task": { "type": "literal", "value": "task2" },
+        "data": { "type": "input", "path": "$.data2" }
+      },
+      "timeoutSeconds": 30,
+      "retryPolicy": {
+        "maximumAttempts": 3,
+        "backoffCoefficient": 2.0,
+        "initialIntervalSeconds": 1,
+        "maximumIntervalSeconds": 10
+      }
+    },
+    "task3": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "task": { "type": "literal", "value": "task3" },
+        "data": { "type": "input", "path": "$.data3" }
+      },
+      "timeoutSeconds": 30,
+      "retryPolicy": {
+        "maximumAttempts": 3,
+        "backoffCoefficient": 2.0,
+        "initialIntervalSeconds": 1,
+        "maximumIntervalSeconds": 10
+      }
+    },
+    "handleParallelFailure": {
+      "type": "activity",
+      "name": "LogError",
+      "input": {
+        "reason": { "type": "literal", "value": "Parallel step failed" },
+        "results": { "type": "stepResult", "stepId": "parallelWithRetries" }
+      }
+    },
+    "success": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "success" },
+        "results": { "type": "stepResult", "stepId": "parallelWithRetries" }
+      }
+    }
+  }
+}

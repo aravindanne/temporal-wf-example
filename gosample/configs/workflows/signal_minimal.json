@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "startStepId": "waitOnly",
+  "steps": {
+    "waitOnly": {
+      "type": "signal",
+      "signalName": "ping",
+      "signalTimeoutSeconds": 120,
+      "nextStepId": "onPing",
+      "timeoutStepId": "onTimeout"
+    },
+    "onPing": {
+      "type": "activity",
+      "name": "Process",
+      "input": { "type": "stepResult", "stepId": "waitOnly" },
+      "nextStepId": null
+    },
+    "onTimeout": {
+      "type": "activity",
+      "name": "LogError",
+      "input": { "type": "literal", "value": { "event": "timeout" } },
+      "nextStepId": null
+    }
+  }
+}

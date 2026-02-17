@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "startStepId": "validate",
+  "steps": {
+    "validate": {
+      "type": "activity",
+      "name": "ValidateInput",
+      "input": { "type": "input" },
+      "nextStepId": "parallelProcessing"
+    },
+    "parallelProcessing": {
+      "type": "parallel",
+      "branchStepIds": ["processPayment", "updateInventory", "sendNotification"],
+      "join": "all",
+      "onFailureStepId": "rollback",
+      "nextStepId": "verifyCompletion"
+    },
+    "processPayment": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "processPayment" },
+        "amount": { "type": "input", "path": "$.amount" },
+        "paymentMethod": { "type": "input", "path": "$.paymentMethod" }
+      },
+      "timeoutSeconds": 60,
+      "retryPolicy": {
+        "maximumAttempts": 2,
+        "backoffCoefficient": 1.5
+      }
+    },
+    "updateInventory": {
+      "type": "condition",
+      "left": { "type": "input", "path": "$.updateInventory" },
+      "operator": "eq",
+      "right": { "type": "literal", "value": true },
+      "thenStepId": "decrementInventory",
+      "elseStepID": "skipInventory"
+    },
+    "decrementInventory": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "decrementInventory" },
+        "productId": { "type": "input", "path": "$.productId" },
+        "quantity": { "type": "input", "path": "$.quantity" }
+      }
+    },
+    "skipInventory": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "skipInventory" }
+      }
+    },
+    "sendNotification": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "sendNotification" },
+        "email": { "type": "input", "path": "$.email" },
+        "message": { "type": "input", "path": "$.message" }
+      }
+    },
+    "rollback": {
+      "type": "activity",
+      "name": "LogError",
+      "input": {
+        "reason": { "type": "literal", "value": "Parallel processing failed, rolling back" },
+        "failedResults": { "type": "stepResult", "stepId": "parallelProcessing" }
+      }
+    },
+    "verifyCompletion": {
+      "type": "condition",
+      "left": { "type": "stepResult", "stepId": "parallelProcessing", "path": "$.processPayment" },
+      "operator": "exists",
+      "thenStepId": "complete",
+      "elseStepID": "rollback"
+    },
+    "complete": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "complete" },
+        "payment": { "type": "stepResult", "stepId": "parallelProcessing", "path": "$.processPayment" },
+        "inventory": { "type": "stepResult", "stepId": "parallelProcessing", "path": "$.updateInventory" },
+        "notification": { "type": "stepResult", "stepId": "parallelProcessing", "path": "$.sendNotification" }
+      }
+    }
+  }
+}

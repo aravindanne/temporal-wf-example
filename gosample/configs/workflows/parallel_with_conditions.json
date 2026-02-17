@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "startStepId": "init",
+  "steps": {
+    "init": {
+      "type": "activity",
+      "name": "ValidateInput",
+      "input": { "type": "input" },
+      "nextStepId": "parallelChecks"
+    },
+    "parallelChecks": {
+      "type": "parallel",
+      "branchStepIds": ["checkUser", "checkProduct", "checkInventory"],
+      "join": "all",
+      "nextStepId": "finalize"
+    },
+    "checkUser": {
+      "type": "condition",
+      "left": { "type": "input", "path": "$.userStatus" },
+      "operator": "eq",
+      "right": { "type": "literal", "value": "active" },
+      "thenStepId": "userValid",
+      "elseStepID": "userInvalid"
+    },
+    "userValid": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "userValid" }
+      }
+    },
+    "userInvalid": {
+      "type": "activity",
+      "name": "LogError",
+      "input": {
+        "reason": { "type": "literal", "value": "User is not active" }
+      }
+    },
+    "checkProduct": {
+      "type": "condition",
+      "left": { "type": "input", "path": "$.productId" },
+      "operator": "exists",
+      "thenStepId": "productExists",
+      "elseStepID": "productMissing"
+    },
+    "productExists": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "productExists" }
+      }
+    },
+    "productMissing": {
+      "type": "activity",
+      "name": "LogError",
+      "input": {
+        "reason": { "type": "literal", "value": "Product ID missing" }
+      }
+    },
+    "checkInventory": {
+      "type": "condition",
+      "left": { "type": "input", "path": "$.quantity" },
+      "operator": "gt",
+      "right": { "type": "literal", "value": 0 },
+      "thenStepId": "inventoryAvailable",
+      "elseStepID": "inventoryUnavailable"
+    },
+    "inventoryAvailable": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "inventoryAvailable" }
+      }
+    },
+    "inventoryUnavailable": {
+      "type": "activity",
+      "name": "LogError",
+      "input": {
+        "reason": { "type": "literal", "value": "Inventory unavailable" }
+      }
+    },
+    "finalize": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "finalize" },
+        "checks": { "type": "stepResult", "stepId": "parallelChecks" }
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "version": "1.0",
+  "startStepId": "start",
+  "steps": {
+    "start": {
+      "type": "activity",
+      "name": "ValidateInput",
+      "input": { "type": "input" },
+      "nextStepId": "tryMultipleSources"
+    },
+    "tryMultipleSources": {
+      "type": "parallel",
+      "branchStepIds": ["sourceA", "sourceB", "sourceC"],
+      "join": "any",
+      "nextStepId": "processResult"
+    },
+    "sourceA": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "source": { "type": "literal", "value": "sourceA" },
+        "query": { "type": "input", "path": "$.query" }
+      }
+    },
+    "sourceB": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "source": { "type": "literal", "value": "sourceB" },
+        "query": { "type": "input", "path": "$.query" }
+      }
+    },
+    "sourceC": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "source": { "type": "literal", "value": "sourceC" },
+        "query": { "type": "input", "path": "$.query" }
+      }
+    },
+    "processResult": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "process" },
+        "result": { "type": "stepResult", "stepId": "tryMultipleSources" }
+      }
+    }
+  }
+}

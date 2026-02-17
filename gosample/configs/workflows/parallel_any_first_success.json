@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "startStepId": "start",
+  "steps": {
+    "start": {
+      "type": "activity",
+      "name": "ValidateInput",
+      "input": { "type": "input" },
+      "nextStepId": "tryCacheOrFetch"
+    },
+    "tryCacheOrFetch": {
+      "type": "parallel",
+      "branchStepIds": ["checkCache", "fetchFromDB"],
+      "join": "any",
+      "nextStepId": "useResult"
+    },
+    "checkCache": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "checkCache" },
+        "key": { "type": "input", "path": "$.cacheKey" }
+      },
+      "timeoutSeconds": 5
+    },
+    "fetchFromDB": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "fetchFromDB" },
+        "query": { "type": "input", "path": "$.query" }
+      },
+      "timeoutSeconds": 30,
+      "retryPolicy": {
+        "maximumAttempts": 2
+      }
+    },
+    "useResult": {
+      "type": "activity",
+      "name": "Process",
+      "input": {
+        "action": { "type": "literal", "value": "useResult" },
+        "result": { "type": "stepResult", "stepId": "tryCacheOrFetch" }
+      }
+    }
+  }
+}

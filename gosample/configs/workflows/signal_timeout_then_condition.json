@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "startStepId": "sendEmail",
+  "steps": {
+    "sendEmail": {
+      "type": "activity",
+      "name": "SendEmail",
+      "input": { "type": "input" },
+      "nextStepId": "waitSignal"
+    },
+    "waitSignal": {
+      "type": "signal",
+      "signalName": "outcome",
+      "signalTimeoutSeconds": 300,
+      "nextStepId": "checkOutcome",
+      "timeoutStepId": "checkOutcome"
+    },
+    "checkOutcome": {
+      "type": "condition",
+      "left": { "type": "stepResult", "stepId": "waitSignal", "path": "$._timeout" },
+      "operator": "eq",
+      "right": { "type": "literal", "value": true },
+      "thenStepId": "onTimeout",
+      "elseStepId": "onSignal"
+    },
+    "onTimeout": {
+      "type": "activity",
+      "name": "LogError",
+      "input": { "type": "literal", "value": { "reason": "signal_timeout" } },
+      "nextStepId": null
+    },
+    "onSignal": {
+      "type": "activity",
+      "name": "Process",
+      "input": { "type": "stepResult", "stepId": "waitSignal" },
+      "nextStepId": null
+    }
+  }
+}
